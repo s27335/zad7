@@ -2,6 +2,8 @@
 
 public class Warehouse
 {
-    public int number { get; set; }
-    public int amount { get; set; }
+    public int idWarehouse { get; set; }
+    public String name { get; set; }
+    public String adress { get; set; }
+    
 }
