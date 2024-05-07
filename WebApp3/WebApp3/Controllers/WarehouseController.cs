@@ -14,11 +14,17 @@ public class WarehouseController : ControllerBase
         _warehouseService = warehouseService;
     }
 
+    //Ogarnac async !!!
 
     [HttpPost]
     public IActionResult CreateWarehouseProduct(int idProduct, int idWarehouse, int amount, String createdAt)
     {
-        var primaryKey = _warehouseService.CreateWarehouseProduct(idProduct, idWarehouse, amount, createdAt);
-        return Ok(primaryKey);
+        if (_warehouseService.ProductExists(idProduct))
+        {
+            var primaryKey = _warehouseService.CreateWarehouseProduct(idProduct, idWarehouse, amount, createdAt);
+            return Ok(primaryKey);
+        }
+
+        return NotFound();
     }
 }
