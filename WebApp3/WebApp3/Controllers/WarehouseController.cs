@@ -22,10 +22,21 @@ public class WarehouseController : ControllerBase
     {
         if (_warehouseService.ProductExists(data.idProduct) && _warehouseService.WarehouseExists(data.idWarehouse) && data.amount>0)
         {
-            var primaryKey = _warehouseService.CreateWarehouseProduct(data.idProduct, data.idWarehouse, data.amount, data.createdAt);
-            return Ok(primaryKey);
+            if (_warehouseService.OrderExists(data.idProduct,data.amount) && _warehouseService.ValidDate(data.idProduct,data.amount,data.createdAt))
+            {
+                if (!_warehouseService.CompletedOrder(data.idProduct,data.amount))
+                {
+                    _warehouseService.UpdateFulfilledAt(data.idProduct,data.amount);
+                    var primaryKey = _warehouseService.CreateWarehouseProduct(data.idProduct, data.idWarehouse, data.amount);
+                    return Created("","Record added with ID: " + primaryKey);
+                }
+
+                return BadRequest("Order has been already completed");
+            }
+
+            return BadRequest("There isn't any order with this parameters");
         }
 
-        return NotFound("Product or warehouse with given id doesn't exists");
+        return BadRequest("Product or warehouse with given id doesn't exists");
     }
 }

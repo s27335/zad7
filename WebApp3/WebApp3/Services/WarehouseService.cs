@@ -52,7 +52,7 @@ public class WarehouseService : IWarehouseService
 
         using var command = new SqlCommand();
         command.Connection = con;
-        command.CommandText = "SELECT COUNT(1) From Order WHERE idProduct = @idProduct AND amount = @amount;";
+        command.CommandText = "SELECT COUNT(1) From [Order] WHERE idProduct = @idProduct AND amount = @amount;";
         command.Parameters.AddWithValue("@idProduct", idProduct);
         command.Parameters.AddWithValue("@amount", amount);
         var exists = (int)command.ExecuteScalar();
@@ -90,13 +90,13 @@ public class WarehouseService : IWarehouseService
         return exists > 0;
     }
 
-    public void UpdateFullfilledAt(int idProduct,int amount)
+    public void UpdateFulfilledAt(int idProduct,int amount)
     {
-        _warehouseRepository.UpdateFullfilledAt(idProduct,amount);
+        _warehouseRepository.UpdateFulfilledAt(idProduct,amount);
     }
     
-    public int CreateWarehouseProduct(int idProduct, int idWarehouse, int amount, DateTime createdAt)
+    public int CreateWarehouseProduct(int idProduct, int idWarehouse, int amount)
     { 
-        return _warehouseRepository.CreateWarehouseProduct(idProduct,idWarehouse,amount,createdAt);
+        return _warehouseRepository.CreateWarehouseProduct(idProduct,idWarehouse,amount);
     }
 }
