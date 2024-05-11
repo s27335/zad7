@@ -14,20 +14,19 @@ public class WarehouseController : ControllerBase
     {
         _warehouseService = warehouseService;
     }
-
-    //Ogarnac async !!!
+    
 
     [HttpPost]
-    public IActionResult CreateWarehouseProduct(InputData data)
+    public async Task<IActionResult> CreateWarehouseProduct(InputData data)
     {
-        if (_warehouseService.ProductExists(data.idProduct) && _warehouseService.WarehouseExists(data.idWarehouse) && data.amount>0)
+        if (await _warehouseService.ProductExists(data.idProduct) && await _warehouseService.WarehouseExists(data.idWarehouse) && data.amount>0)
         {
-            if (_warehouseService.OrderExists(data.idProduct,data.amount) && _warehouseService.ValidDate(data.idProduct,data.amount,data.createdAt))
+            if (await _warehouseService.OrderExists(data.idProduct,data.amount) && await _warehouseService.ValidDate(data.idProduct,data.amount,data.createdAt))
             {
-                if (!_warehouseService.CompletedOrder(data.idProduct,data.amount))
+                if (!await _warehouseService.CompletedOrder(data.idProduct,data.amount))
                 {
-                    _warehouseService.UpdateFulfilledAt(data.idProduct,data.amount);
-                    var primaryKey = _warehouseService.CreateWarehouseProduct(data.idProduct, data.idWarehouse, data.amount);
+                    await _warehouseService.UpdateFulfilledAt(data.idProduct,data.amount);
+                    var primaryKey = await _warehouseService.CreateWarehouseProduct(data.idProduct, data.idWarehouse, data.amount);
                     return Created("","Record added with ID: " + primaryKey);
                 }
 

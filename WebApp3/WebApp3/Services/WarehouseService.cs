@@ -17,85 +17,85 @@ public class WarehouseService : IWarehouseService
         _configuration = configuration;
     }
 
-    public bool ProductExists(int idProduct)
+    public async Task<bool> ProductExists(int idProduct)
     {
-        using var con = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]);
-        con.Open();
+        await using var con = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]);
+        await con.OpenAsync();
 
-        using var command = new SqlCommand();
+        await using var command = new SqlCommand();
         command.Connection = con;
         command.CommandText = "SELECT COUNT(1) FROM Product WHERE idProduct = @idProduct;";
         command.Parameters.AddWithValue("@idProduct", idProduct);
-        var exists = (int)command.ExecuteScalar();
+        var exists = (int)await command.ExecuteScalarAsync();
 
         return exists > 0;
     }
 
-    public bool WarehouseExists(int idWarehouse)
+    public async Task<bool> WarehouseExists(int idWarehouse)
     {
-        using var con = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]);
-        con.Open();
+        await using var con = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]);
+        await con.OpenAsync();
 
-        using var command = new SqlCommand();
+        await using var command = new SqlCommand();
         command.Connection = con;
         command.CommandText = "SELECT COUNT(1) From Warehouse WHERE idWarehouse = @idWarehouse;";
         command.Parameters.AddWithValue("@idWarehouse", idWarehouse);
-        var exists = (int)command.ExecuteScalar();
+        var exists = (int)await command.ExecuteScalarAsync();
 
         return exists > 0;
     }
 
-    public bool OrderExists(int idProduct,int amount)
+    public async Task<bool> OrderExists(int idProduct,int amount)
     {
-        using var con = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]);
-        con.Open();
+        await using var con = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]);
+        await con.OpenAsync();
 
-        using var command = new SqlCommand();
+        await using var command = new SqlCommand();
         command.Connection = con;
         command.CommandText = "SELECT COUNT(1) From [Order] WHERE idProduct = @idProduct AND amount = @amount;";
         command.Parameters.AddWithValue("@idProduct", idProduct);
         command.Parameters.AddWithValue("@amount", amount);
-        var exists = (int)command.ExecuteScalar();
+        var exists = (int)await command.ExecuteScalarAsync();
 
         return exists > 0;
     }
 
-    public bool ValidDate(int idProduct,int amount,DateTime createdAt)
+    public async Task<bool> ValidDate(int idProduct,int amount,DateTime createdAt)
     {
-        using var con = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]);
-        con.Open();
+        await using var con = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]);
+        await con.OpenAsync();
 
-        using var command = new SqlCommand();
+        await using var command = new SqlCommand();
         command.Connection = con;
         command.CommandText = "SELECT createdAt FROM [Order] WHERE idProduct = @idProduct AND amount = @amount;";
         command.Parameters.AddWithValue("@idProduct", idProduct);
         command.Parameters.AddWithValue("@amount", amount);
-        var date = (DateTime)command.ExecuteScalar();
+        var date = (DateTime)await command.ExecuteScalarAsync();
 
         return date < createdAt;
     }
 
-    public bool CompletedOrder(int idProduct, int amount)
+    public async Task<bool> CompletedOrder(int idProduct, int amount)
     {
-        using var con = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]);
-        con.Open();
+        await using var con = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]);
+        await con.OpenAsync();
 
-        using var command = new SqlCommand();
+        await using var command = new SqlCommand();
         command.Connection = con;
         command.CommandText = "SELECT COUNT(1) FROM Product_Warehouse WHERE idProduct = @idProduct AND amount = @amount;";
         command.Parameters.AddWithValue("@idProduct", idProduct);
         command.Parameters.AddWithValue("amount", amount);
-        var exists = (int)command.ExecuteScalar();
-
+        var exists = (int)await command.ExecuteScalarAsync();
+        
         return exists > 0;
     }
 
-    public void UpdateFulfilledAt(int idProduct,int amount)
+    public async Task UpdateFulfilledAt(int idProduct,int amount)
     {
-        _warehouseRepository.UpdateFulfilledAt(idProduct,amount);
+        await _warehouseRepository.UpdateFulfilledAt(idProduct,amount);
     }
     
-    public int CreateWarehouseProduct(int idProduct, int idWarehouse, int amount)
+    public Task<int> CreateWarehouseProduct(int idProduct, int idWarehouse, int amount)
     { 
         return _warehouseRepository.CreateWarehouseProduct(idProduct,idWarehouse,amount);
     }

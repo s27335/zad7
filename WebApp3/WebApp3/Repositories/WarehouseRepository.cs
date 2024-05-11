@@ -10,25 +10,25 @@ public class WarehouseRepository : IWarehouseRepository
         _configuration = configuration;
     }
     
-    public void UpdateFulfilledAt(int idProduct, int amount)
+    public async Task UpdateFulfilledAt(int idProduct, int amount)
     {
-        using var con = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]);
-        con.Open();
+        await using var con = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]);
+        await con.OpenAsync();
 
-        using var command = new SqlCommand();
+        await using var command = new SqlCommand();
         command.Connection = con;
         command.CommandText = "UPDATE [Order] SET fulFilledAt = GETDATE() WHERE idProduct = @idProduct AND amount = @amount;";
         command.Parameters.AddWithValue("@idProduct", idProduct);
         command.Parameters.AddWithValue("amount", amount);
-        command.ExecuteNonQuery();
+        await command.ExecuteNonQueryAsync();
     }
     
-    public int CreateWarehouseProduct(int idProduct, int idWarehouse, int amount)
+    public async Task<int> CreateWarehouseProduct(int idProduct, int idWarehouse, int amount)
     {
-        using var con = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]);
-        con.Open();
+        await using var con = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]);
+        await con.OpenAsync();
 
-        using var command = new SqlCommand();
+        await using var command = new SqlCommand();
         command.Connection = con;
         command.CommandText =
             "INSERT INTO Product_Warehouse (idWarehouse, idProduct, idOrder,amount, price, createdAt)" +
@@ -39,7 +39,7 @@ public class WarehouseRepository : IWarehouseRepository
         command.Parameters.AddWithValue("@idProduct", idProduct);
         command.Parameters.AddWithValue("@amount", amount);
 
-        return Convert.ToInt32(command.ExecuteScalar());
+        return Convert.ToInt32(await command.ExecuteScalarAsync());
     }
 
     

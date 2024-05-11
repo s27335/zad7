@@ -2,6 +2,6 @@
 
 public interface IWarehouseRepository
 {
-    public int CreateWarehouseProduct(int idProduct, int idWarehouse, int amount);
-    public void UpdateFulfilledAt(int idProduct, int amount);
+    public Task<int> CreateWarehouseProduct(int idProduct, int idWarehouse, int amount);
+    public Task UpdateFulfilledAt(int idProduct, int amount);
 }
